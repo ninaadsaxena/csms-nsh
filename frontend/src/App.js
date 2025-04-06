@@ -14,6 +14,33 @@ function App() {
   const [currentDate, setCurrentDate] = useState('');
 
   useEffect(() => {
+    const addHoverEffects = () => {
+      const buttons = document.querySelectorAll('.action-button');
+      
+      buttons.forEach(button => {
+        button.addEventListener('mouseenter', () => {
+          button.style.transform = 'translateY(-3px)';
+          button.style.boxShadow = '0 10px 20px rgba(91, 33, 182, 0.3)';
+        });
+        
+        button.addEventListener('mouseleave', () => {
+          button.style.transform = 'translateY(0)';
+          button.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        });
+      });
+    };
+
+    addHoverEffects();
+    
+    // Cleanup function
+    return () => {
+      const buttons = document.querySelectorAll('.action-button');
+      buttons.forEach(button => {
+        button.removeEventListener('mouseenter', () => {});
+        button.removeEventListener('mouseleave', () => {});
+      });
+    };
+  }, []);
     const fetchCurrentDate = async () => {
       try {
         const date = await getCurrentDate();
