@@ -100,7 +100,7 @@ const WasteManagement = () => {
   };
 
   return (
-    <div className="waste-management">
+    <div className="waste-management starry-background">
       <h2>Waste Management</h2>
       
       {message && (
@@ -109,11 +109,11 @@ const WasteManagement = () => {
         </div>
       )}
       
-      <div className="card">
+      <div className="space-card">
         <div className="card-header">
           <h3 className="card-title">Waste Items</h3>
           <button 
-            className="btn btn-secondary" 
+            className="cosmic-button" 
             onClick={fetchWasteItems} 
             disabled={loading}
           >
@@ -121,7 +121,9 @@ const WasteManagement = () => {
           </button>
         </div>
         
-        {wasteItems.length > 0 ? (
+        {loading ? (
+          <div className="space-loader"></div>
+        ) : wasteItems.length > 0 ? (
           <table>
             <thead>
               <tr>
@@ -160,7 +162,7 @@ const WasteManagement = () => {
         )}
       </div>
       
-      <div className="card">
+      <div className="space-card">
         <div className="card-header">
           <h3 className="card-title">Create Return Plan</h3>
         </div>
@@ -204,7 +206,7 @@ const WasteManagement = () => {
             </div>
           </div>
           
-          <button type="submit" className="btn" disabled={loading || wasteItems.length === 0}>
+          <button type="submit" className="cosmic-button" disabled={loading || wasteItems.length === 0}>
             {loading ? 'Processing...' : 'Create Return Plan'}
           </button>
         </form>
@@ -212,7 +214,7 @@ const WasteManagement = () => {
       
       {returnPlan && (
         <>
-          <div className="card">
+          <div className="space-card">
             <div className="card-header">
               <h3 className="card-title">Return Plan</h3>
             </div>
@@ -240,7 +242,7 @@ const WasteManagement = () => {
             </table>
           </div>
           
-          <div className="card">
+          <div className="space-card">
             <div className="card-header">
               <h3 className="card-title">Return Manifest</h3>
             </div>
@@ -272,7 +274,7 @@ const WasteManagement = () => {
               </table>
               
               <button 
-                className="btn btn-success" 
+                className="cosmic-button" 
                 onClick={handleCompleteUndocking} 
                 disabled={loading}
               >
