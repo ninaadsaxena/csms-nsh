@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getLogs } from '../services/api';
 
 const LogsView = () => {
@@ -14,11 +14,8 @@ const LogsView = () => {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
 
-  useEffect(() => {
-    fetchLogs();
-  }, []);
-
-  const fetchLogs = async () => {
+  // Use useCallback to memoize the fetchLogs function
+  const fetchLogs = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getLogs(filterParams);
@@ -34,7 +31,11 @@ const LogsView = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterParams]); // Add filterParams as a dependency
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]); // Add fetchLogs as a dependency
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
