@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { getItems, getContainers, identifyWaste } from '../services/api';
 import { Link } from 'react-router-dom';
 
@@ -13,54 +13,59 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch items, containers, and waste items
-        const [itemsResponse, containersResponse, wasteResponse] = await Promise.all([
-          getItems(),
-          getContainers(),
-          identifyWaste()
-        ]);
-        
-        const items = itemsResponse.items || [];
-        const containers = containersResponse.containers || [];
-        const wasteItems = wasteResponse.wasteItems || [];
-        
-        // Calculate high priority items (priority > 80)
-        const highPriorityItems = items.filter(item => item.priority > 80).length;
-        
-        // Calculate items expiring in the next 7 days
-        const today = new Date();
-        const nextWeek = new Date(today);
-        nextWeek.setDate(today.getDate() + 7);
-        
-        const expiringItems = items.filter(item => {
-          if (!item.expiryDate || item.expiryDate === 'N/A') return false;
-          const expiryDate = new Date(item.expiryDate);
-          return expiryDate > today && expiryDate <= nextWeek;
-        }).length;
-        
-        setStats({
-          totalItems: items.length,
-          totalContainers: containers.length,
-          wasteItems: wasteItems.length,
-          highPriorityItems,
-          expiringItems
-        });
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-        setError('Failed to load dashboard data. Please try again.');
-        setLoading(false);
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch items, containers, and waste items
+      const [itemsResponse, containersResponse, wasteResponse] = await Promise.all([
+        getItems(),
+        getContainers(),
+        identifyWaste()
+      ]);
+      
+      // Check for API errors
+      if (!itemsResponse.success || !containersResponse.success || !wasteResponse.success) {
+        throw new Error('One or more API requests failed');
       }
-    };
-    
-    fetchDashboardData();
+      
+      const items = itemsResponse.items || [];
+      const containers = containersResponse.containers || [];
+      const wasteItems = wasteResponse.wasteItems || [];
+      
+      // Calculate high priority items (priority > 80)
+      const highPriorityItems = items.filter(item => item.priority > 80).length;
+      
+      // Calculate items expiring in the next 7 days
+      const today = new Date();
+      const nextWeek = new Date(today);
+      nextWeek.setDate(today.getDate() + 7);
+      
+      const expiringItems = items.filter(item => {
+        if (!item.expiryDate || item.expiryDate === 'N/A') return false;
+        const expiryDate = new Date(item.expiryDate);
+        return expiryDate > today && expiryDate <= nextWeek;
+      }).length;
+      
+      setStats({
+        totalItems: items.length,
+        totalContainers: containers.length,
+        wasteItems: wasteItems.length,
+        highPriorityItems,
+        expiringItems
+      });
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setError('Failed to load dashboard data. Please try again.');
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   if (loading) {
     return <div className="loading">Loading dashboard data...</div>;
@@ -84,6 +89,34 @@ const Dashboard = () => {
               <div className="stat-value">{stats.totalItems}</div>
               <div className="stat-label">Total Items</div>
             </div>
+            <div className="stat-item">
+              <div className="stat-value">{stats.totalContainers}</div>
+              <div className="stat-label">Total Containers</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-value">{stats.wasteItems}</div>
+              <div className="stat-label">Waste Items</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-value">{stats.highPriorityItems}</div>
+              <div className="stat-label">High Priority Items</div>
+            </div>
+            <div className="stat-item">
+              <div className="stat-value">{stats.expiringItems}</div>
+              <div className="stat-label">Expiring Soon</div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Quick Actions</h3>
+          </div>
+          <div className="action-buttons">
+            <Link to="/placement" className="btn">New Placement</Link>
+            <Link to="/search" className="btn">Search & Retrieve</Link>
+            <Link to="/waste" className="btn">Waste Management</Link>
+            <Link to="/logs" className="btn">System Logs</Link>
           </div>
         </div>
       </div>
