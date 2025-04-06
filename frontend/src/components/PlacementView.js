@@ -1,68 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { getPlacementRecommendations, getContainers } from '../services/api';
+import React, { useState } from 'react';
+import { getPlacementRecommendations } from '../services/api';
 
 const PlacementView = () => {
-  const [containers, setContainers] = useState([]);
-  const [newItem, setNewItem] = useState({
+  const [itemData, setItemData] = useState({
     itemId: '',
     name: '',
-    width: 0,
-    depth: 0,
-    height: 0,
-    mass: 0,
+    type: 'food',
+    width: 10,
+    height: 10,
+    depth: 10,
+    weight: 1,
     priority: 50,
-    expiryDate: '',
-    usageLimit: 1,
-    preferredZone: ''
+    usesRemaining: 1,
+    expiryDate: ''
   });
-  const [placements, setPlacements] = useState([]);
-  const [rearrangements, setRearrangements] = useState([]);
+  
+  const [recommendations, setRecommendations] = useState([]);
+  const [selectedRecommendation, setSelectedRecommendation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-
-  useEffect(() => {
-    const fetchContainers = async () => {
-      try {
-        const response = await getContainers();
-        setContainers(response.containers || []);
-      } catch (error) {
-        setMessage('Failed to load containers: ' + error.message);
-        setMessageType('error');
-      }
-    };
-
-    fetchContainers();
-  }, []);
-
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewItem({
-      ...newItem,
-      [name]: name === 'width' || name === 'depth' || name === 'height' || name === 'mass' || name === 'priority' || name === 'usageLimit' 
+    setItemData({
+      ...itemData,
+      [name]: name === 'priority' || name === 'width' || name === 'height' || name === 'depth' || name === 'weight' || name === 'usesRemaining' 
         ? Number(value) 
         : value
     });
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
+    setRecommendations([]);
+    setSelectedRecommendation(null);
     
     try {
-      const response = await getPlacementRecommendations({
-        items: [newItem],
-        containers: []
-      });
+      const response = await getPlacementRecommendations(itemData);
       
       if (response.success) {
-        setPlacements(response.placements || []);
-        setRearrangements(response.rearrangements || []);
-        setMessage('Placement recommendations generated successfully!');
-        setMessageType('success');
+        setRecommendations(response.recommendations || []);
+        if (response.recommendations.length === 0) {
+          setMessage('No suitable placement locations found.');
+          setMessageType('warning');
+        } else {
+          setMessage('Recommendations generated successfully!');
+          setMessageType('success');
+        }
       } else {
-        setMessage('Failed to generate placement recommendations.');
+        setMessage('Failed to generate recommendations: ' + (response.message || 'Unknown error'));
         setMessageType('error');
       }
     } catch (error) {
@@ -72,10 +61,51 @@ const PlacementView = () => {
       setLoading(false);
     }
   };
-
+  
+  const handleRecommendationSelect = (recommendation) => {
+    setSelectedRecommendation(recommendation);
+  };
+  
+  const handleConfirmPlacement = async () => {
+    if (!selectedRecommendation) return;
+    
+    setLoading(true);
+    setMessage('');
+    
+    try {
+      // In a real application, this would call an API to confirm the placement
+      // For this example, we'll just simulate a successful placement
+      setTimeout(() => {
+        setMessage('Item placed successfully!');
+        setMessageType('success');
+        setLoading(false);
+        
+        // Reset form for next item
+        setItemData({
+          itemId: '',
+          name: '',
+          type: 'food',
+          width: 10,
+          height: 10,
+          depth: 10,
+          weight: 1,
+          priority: 50,
+          usesRemaining: 1,
+          expiryDate: ''
+        });
+        setRecommendations([]);
+        setSelectedRecommendation(null);
+      }, 1000);
+    } catch (error) {
+      setMessage('Error: ' + error.message);
+      setMessageType('error');
+      setLoading(false);
+    }
+  };
+  
   return (
-    <div className="placement-view">
-      <h2>Placement Recommendations</h2>
+    <div className="placement-view starry-background">
+      <h2>New Item Placement</h2>
       
       {message && (
         <div className={`alert alert-${messageType}`}>
@@ -83,9 +113,9 @@ const PlacementView = () => {
         </div>
       )}
       
-      <div className="card">
+      <div className="space-card">
         <div className="card-header">
-          <h3 className="card-title">Add New Item</h3>
+          <h3 className="card-title">Item Details</h3>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-row">
@@ -95,7 +125,7 @@ const PlacementView = () => {
                 type="text"
                 id="itemId"
                 name="itemId"
-                value={newItem.itemId}
+                value={itemData.itemId}
                 onChange={handleInputChange}
                 required
               />
@@ -107,8 +137,39 @@ const PlacementView = () => {
                 type="text"
                 id="name"
                 name="name"
-                value={newItem.name}
+                value={itemData.name}
                 onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+          
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="type">Type</label>
+              <select
+                id="type"
+                name="type"
+                value={itemData.type}
+                onChange={handleInputChange}
+              >
+                <option value="food">Food</option>
+                <option value="equipment">Equipment</option>
+                <option value="medical">Medical</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="priority">Priority</label>
+              <input
+                type="number"
+                id="priority"
+                name="priority"
+                value={itemData.priority}
+                onChange={handleInputChange}
+                min="1"
+                max="100"
                 required
               />
             </div>
@@ -121,20 +182,7 @@ const PlacementView = () => {
                 type="number"
                 id="width"
                 name="width"
-                value={newItem.width}
-                onChange={handleInputChange}
-                min="1"
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="depth">Depth (cm)</label>
-              <input
-                type="number"
-                id="depth"
-                name="depth"
-                value={newItem.depth}
+                value={itemData.width}
                 onChange={handleInputChange}
                 min="1"
                 required
@@ -147,7 +195,20 @@ const PlacementView = () => {
                 type="number"
                 id="height"
                 name="height"
-                value={newItem.height}
+                value={itemData.height}
+                onChange={handleInputChange}
+                min="1"
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="depth">Depth (cm)</label>
+              <input
+                type="number"
+                id="depth"
+                name="depth"
+                value={itemData.depth}
                 onChange={handleInputChange}
                 min="1"
                 required
@@ -157,143 +218,77 @@ const PlacementView = () => {
           
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="mass">Mass (kg)</label>
+              <label htmlFor="weight">Weight (kg)</label>
               <input
                 type="number"
-                id="mass"
-                name="mass"
-                value={newItem.mass}
+                id="weight"
+                name="weight"
+                value={itemData.weight}
                 onChange={handleInputChange}
-                min="0"
+                min="0.1"
                 step="0.1"
                 required
               />
             </div>
             
             <div className="form-group">
-              <label htmlFor="priority">Priority (1-100)</label>
+              <label htmlFor="usesRemaining">Uses Remaining</label>
               <input
                 type="number"
-                id="priority"
-                name="priority"
-                value={newItem.priority}
+                id="usesRemaining"
+                name="usesRemaining"
+                value={itemData.usesRemaining}
                 onChange={handleInputChange}
                 min="1"
-                max="100"
                 required
               />
             </div>
-          </div>
-          
-          <div className="form-row">
+            
             <div className="form-group">
               <label htmlFor="expiryDate">Expiry Date</label>
               <input
                 type="date"
                 id="expiryDate"
                 name="expiryDate"
-                value={newItem.expiryDate}
+                value={itemData.expiryDate}
                 onChange={handleInputChange}
-              />
-              <small>Leave empty if not applicable</small>
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="usageLimit">Usage Limit</label>
-              <input
-                type="number"
-                id="usageLimit"
-                name="usageLimit"
-                value={newItem.usageLimit}
-                onChange={handleInputChange}
-                min="1"
-                required
               />
             </div>
           </div>
           
-          <div className="form-group">
-            <label htmlFor="preferredZone">Preferred Zone</label>
-            <select
-              id="preferredZone"
-              name="preferredZone"
-              value={newItem.preferredZone}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="">Select a zone</option>
-              {Array.from(new Set(containers.map(container => container.zone))).map(zone => (
-                <option key={zone} value={zone}>{zone}</option>
-              ))}
-            </select>
-          </div>
-          
-          <button type="submit" className="btn" disabled={loading}>
-            {loading ? 'Processing...' : 'Generate Placement Recommendations'}
+          <button type="submit" className="cosmic-button" disabled={loading}>
+            {loading ? 'Generating...' : 'Generate Recommendations'}
           </button>
         </form>
       </div>
       
-      {placements.length > 0 && (
-        <div className="card">
+      {recommendations.length > 0 && (
+        <div className="space-card">
           <div className="card-header">
             <h3 className="card-title">Placement Recommendations</h3>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Item ID</th>
-                <th>Container ID</th>
-                <th>Position</th>
-              </tr>
-            </thead>
-            <tbody>
-              {placements.map((placement, index) => (
-                <tr key={index}>
-                  <td>{placement.itemId}</td>
-                  <td>{placement.containerId}</td>
-                  <td>
-                    Start: ({placement.position.startCoordinates.width}, 
-                    {placement.position.startCoordinates.depth}, 
-                    {placement.position.startCoordinates.height}) <br />
-                    End: ({placement.position.endCoordinates.width}, 
-                    {placement.position.endCoordinates.depth}, 
-                    {placement.position.endCoordinates.height})
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-      
-      {rearrangements.length > 0 && (
-        <div className="card">
-          <div className="card-header">
-            <h3 className="card-title">Rearrangement Plan</h3>
+          <div className="recommendations-list">
+            {recommendations.map((recommendation, index) => (
+              <div 
+                key={index} 
+                className={`recommendation-item ${selectedRecommendation === recommendation ? 'selected' : ''}`}
+                onClick={() => handleRecommendationSelect(recommendation)}
+              >
+                <p>Container: {recommendation.containerId}</p>
+                <p>Position: ({recommendation.position.x}, {recommendation.position.y}, {recommendation.position.z})</p>
+                <p>Score: {recommendation.score}</p>
+              </div>
+            ))}
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Step</th>
-                <th>Action</th>
-                <th>Item ID</th>
-                <th>From Container</th>
-                <th>To Container</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rearrangements.map((step, index) => (
-                <tr key={index}>
-                  <td>{step.step}</td>
-                  <td>{step.action}</td>
-                  <td>{step.itemId}</td>
-                  <td>{step.fromContainer}</td>
-                  <td>{step.toContainer}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {selectedRecommendation && (
+            <button 
+              className="cosmic-button" 
+              onClick={handleConfirmPlacement}
+              disabled={loading}
+            >
+              {loading ? 'Confirming...' : 'Confirm Placement'}
+            </button>
+          )}
         </div>
       )}
     </div>
