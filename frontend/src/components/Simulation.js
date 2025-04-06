@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { simulateDay, getItems } from '../services/api';
 
 const Simulation = () => {
@@ -11,11 +11,7 @@ const Simulation = () => {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
-
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     try {
       const response = await getItems();
       if (response.success) {
@@ -29,7 +25,11 @@ const Simulation = () => {
       setMessage('Error fetching items: ' + error.message);
       setMessageType('error');
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems]);
 
   const handleItemSelection = (itemId) => {
     if (selectedItems.includes(itemId)) {
