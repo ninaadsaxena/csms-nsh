@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { searchItem, retrieveItem, placeItem } from '../services/api';
 
@@ -37,7 +38,6 @@ const SearchView = () => {
     setRetrievalSteps([]);
     
     try {
-      // Ensure at least one search parameter is provided
       if (!searchParams.itemId && !searchParams.itemName) {
         setMessage('Please provide either Item ID or Item Name');
         setMessageType('error');
@@ -139,3 +139,64 @@ const SearchView = () => {
         setMessage('Item placed successfully!');
         setMessageType('success');
         setShowPlacementForm(false);
+        setSearchResult(null);
+        setRetrievalSteps([]);
+      } else {
+        setMessage('Placement failed: ' + (response.message || 'Unknown error'));
+        setMessageType('error');
+      }
+    } catch (error) {
+      setMessage('Error: ' + error.message);
+      setMessageType('error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="search-view starry-background">
+      <h2>Search and Retrieval</h2>
+      
+      {message && (
+        <div className={`alert alert-${messageType}`}>
+          {message}
+        </div>
+      )}
+      
+      <div className="space-card">
+        <form onSubmit={handleSearch}>
+          {/* Add form inputs for search parameters */}
+          <button type="submit" className="cosmic-button" disabled={loading}>
+            {loading ? 'Searching...' : 'Search'}
+          </button>
+        </form>
+      </div>
+      
+      {searchResult && (
+        <div className="space-card">
+          {/* Display search result details */}
+          <button 
+            className="cosmic-button" 
+            onClick={handleRetrieve} 
+            disabled={loading}
+          >
+            Retrieve Item
+          </button>
+        </div>
+      )}
+      
+      {showPlacementForm && (
+        <div className="space-card">
+          <form onSubmit={handlePlace}>
+            {/* Add form inputs for placement data */}
+            <button type="submit" className="cosmic-button" disabled={loading}>
+              {loading ? 'Placing...' : 'Place Item'}
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SearchView;
