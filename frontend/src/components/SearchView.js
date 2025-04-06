@@ -308,3 +308,69 @@ const SearchView = () => {
                     min="0"
                     required
                   />
+                  <input
+                    type="number"
+                    name="start_height"
+                    placeholder="Height"
+                    value={placementData.position.startCoordinates.height}
+                    onChange={handlePlacementChange}
+                    min="0"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div className="form-group">
+                <label>End Coordinates</label>
+                <div className="coordinates-input">
+                  <input
+                    type="number"
+                    name="end_width"
+                    placeholder="Width"
+                    value={placementData.position.endCoordinates.width}
+                    onChange={handlePlacementChange}
+                    min="0"
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="end_depth"
+                    placeholder="Depth"
+                    value={placementData.position.endCoordinates.depth}
+                    onChange={handlePlacementChange}
+                    min="0"
+                    required
+                  />
+                  <input
+                    type="number"
+                    name="end_height"
+                    placeholder="Height"
+                    value={placementData.position.endCoordinates.height}
+                    onChange={handlePlacementChange}
+                    min="0"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="form-actions">
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? 'Placing...' : 'Place Item'}
+              </button>
+              <button 
+                type="button" 
+                className="btn btn-secondary" 
+                onClick={() => setShowPlacementForm(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SearchView;
