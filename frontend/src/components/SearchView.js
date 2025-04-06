@@ -303,4 +303,8 @@ const SearchView = () => {
                     type="number"
                     name="start_depth"
                     placeholder="Depth"
-                    value={placementData.position.start
+                    value={placementData.position.startCoordinates.depth}
+                    onChange={handlePlacementChange}
+                    min="0"
+                    required
+                  />
