@@ -84,3 +84,11 @@ const Dashboard = () => {
               <div className="stat-value">{stats.totalItems}</div>
               <div className="stat-label">Total Items</div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
