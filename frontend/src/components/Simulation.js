@@ -118,10 +118,10 @@ const Simulation = () => {
   };
 
   return (
-    <div className="simulation">
+    <div className="simulation starry-background">
       <h2>Time Simulation</h2>
       
-      <div className="current-date-display">
+      <div className="current-date-display space-card">
         <h3>Current Date: {currentDate}</h3>
       </div>
       
@@ -131,30 +131,34 @@ const Simulation = () => {
         </div>
       )}
       
-      <div className="card">
+      <div className="space-card">
         <div className="card-header">
           <h3 className="card-title">Select Items to Use</h3>
         </div>
-        <div className="items-grid">
-          {items.map(item => (
-            <div 
-              key={item.itemId} 
-              className={`item-card ${selectedItems.includes(item.itemId) ? 'selected' : ''}`}
-              onClick={() => handleItemSelection(item.itemId)}
-            >
-              <h4>{item.name}</h4>
-              <p>ID: {item.itemId}</p>
-              <p>Uses Remaining: {item.usesRemaining}</p>
-              {item.expiryDate && item.expiryDate !== 'N/A' && (
-                <p>Expires: {new Date(item.expiryDate).toLocaleDateString()}</p>
-              )}
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="space-loader"></div>
+        ) : (
+          <div className="items-grid">
+            {items.map(item => (
+              <div 
+                key={item.itemId} 
+                className={`item-card ${selectedItems.includes(item.itemId) ? 'selected' : ''}`}
+                onClick={() => handleItemSelection(item.itemId)}
+              >
+                <h4>{item.name}</h4>
+                <p>ID: {item.itemId}</p>
+                <p>Uses Remaining: {item.usesRemaining}</p>
+                {item.expiryDate && item.expiryDate !== 'N/A' && (
+                  <p>Expires: {new Date(item.expiryDate).toLocaleDateString()}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
         
         <div className="simulation-controls">
           <button 
-            className="btn" 
+            className="cosmic-button" 
             onClick={handleSimulateDay} 
             disabled={loading}
           >
@@ -170,7 +174,7 @@ const Simulation = () => {
               onChange={(e) => setDaysToSimulate(parseInt(e.target.value))}
             />
             <button 
-              className="btn btn-secondary" 
+              className="cosmic-button" 
               onClick={handleSimulateDays} 
               disabled={loading}
             >
@@ -181,7 +185,7 @@ const Simulation = () => {
       </div>
       
       {simulationResults && (
-        <div className="card">
+        <div className="space-card">
           <div className="card-header">
             <h3 className="card-title">Simulation Results</h3>
           </div>
