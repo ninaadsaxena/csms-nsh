@@ -70,7 +70,7 @@ function App() {
           </Routes>
         </main>
         <footer className="app-footer">
-          <p>National Space Hackathon 2025 - Cargo Stowage Management System</p>
+          <p>ISS Cargo Stowage Management System - Built by Team Schrödingers Code</p>
         </footer>
       </div>
     </Router>
