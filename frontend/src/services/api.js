@@ -192,3 +192,14 @@ export const getItems = async () => {
     return handleApiError(error);
   }
 };
+
+// Get dashboard data
+export const getDashboardData = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/dashboard`);
+    return response.data;
+  } catch (error) {
+    return handleApiError(error);
+  }
+};
+
