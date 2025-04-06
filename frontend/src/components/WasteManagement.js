@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { identifyWaste, getWasteReturnPlan, completeUndocking } from '../services/api';
 
 const WasteManagement = () => {
@@ -13,11 +13,7 @@ const WasteManagement = () => {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
 
-  useEffect(() => {
-    fetchWasteItems();
-  }, []);
-
-  const fetchWasteItems = async () => {
+  const fetchWasteItems = useCallback(async () => {
     setLoading(true);
     try {
       const response = await identifyWaste();
@@ -37,7 +33,11 @@ const WasteManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchWasteItems();
+  }, [fetchWasteItems]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
