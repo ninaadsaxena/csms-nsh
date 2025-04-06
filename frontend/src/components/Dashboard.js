@@ -68,7 +68,7 @@ const Dashboard = () => {
   }, [fetchDashboardData]);
 
   if (loading) {
-    return <div className="loading">Loading dashboard data...</div>;
+    return <div className="space-loader"></div>;
   }
 
   if (error) {
@@ -85,38 +85,38 @@ const Dashboard = () => {
             <h3 className="card-title">Inventory Overview</h3>
           </div>
           <div className="stat-grid">
-            <div className="stat-item">
+            <div className="stat-card">
               <div className="stat-value">{stats.totalItems}</div>
               <div className="stat-label">Total Items</div>
             </div>
-            <div className="stat-item">
+            <div className="stat-card">
               <div className="stat-value">{stats.totalContainers}</div>
               <div className="stat-label">Total Containers</div>
             </div>
-            <div className="stat-item">
+            <div className="stat-card">
               <div className="stat-value">{stats.wasteItems}</div>
               <div className="stat-label">Waste Items</div>
             </div>
-            <div className="stat-item">
+            <div className="stat-card">
               <div className="stat-value">{stats.highPriorityItems}</div>
               <div className="stat-label">High Priority Items</div>
             </div>
-            <div className="stat-item">
+            <div className="stat-card">
               <div className="stat-value">{stats.expiringItems}</div>
               <div className="stat-label">Expiring Soon</div>
             </div>
           </div>
         </div>
         
-        <div className="card">
+        <div className="space-card">
           <div className="card-header">
             <h3 className="card-title">Quick Actions</h3>
           </div>
           <div className="action-buttons">
-            <Link to="/placement" className="btn">New Placement</Link>
-            <Link to="/search" className="btn">Search & Retrieve</Link>
-            <Link to="/waste" className="btn">Waste Management</Link>
-            <Link to="/logs" className="btn">System Logs</Link>
+            <Link to="/placement" className="cosmic-button">New Placement</Link>
+            <Link to="/search" className="cosmic-button">Search & Retrieve</Link>
+            <Link to="/waste" className="cosmic-button">Waste Management</Link>
+            <Link to="/logs" className="cosmic-button">System Logs</Link>
           </div>
         </div>
       </div>
