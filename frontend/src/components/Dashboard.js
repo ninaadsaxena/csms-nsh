@@ -76,11 +76,11 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="dashboard">
+    <div className="dashboard starry-background">
       <h2>Dashboard</h2>
       
       <div className="grid">
-        <div className="card">
+        <div className="space-card">
           <div className="card-header">
             <h3 className="card-title">Inventory Overview</h3>
           </div>
