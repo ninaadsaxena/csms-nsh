@@ -12,6 +12,34 @@ const ThreeDView = () => {
     const init = async () => {
       // Create scene
       scene = new THREE.Scene();
+      
+      const starGeometry = new THREE.BufferGeometry();
+      const starMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.02,
+      });
+      
+      const starVertices = [];
+      for (let i = 0; i < 10000; i++) {
+        const x = (Math.random() - 0.5) * 2000;
+        const y = (Math.random() - 0.5) * 2000;
+        const z = (Math.random() - 0.5) * 2000;
+        starVertices.push(x, y, z);
+      }
+      
+      starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+      const stars = new THREE.Points(starGeometry, starMaterial);
+      scene.add(stars);
+      
+      // Add ambient light with space feel
+      const ambientLight = new THREE.AmbientLight(0x222244, 0.5);
+      scene.add(ambientLight);
+      
+      // Add directional light to simulate sun
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(5, 3, 5);
+      scene.add(directionalLight);
+
       scene.background = new THREE.Color(0xf0f0f0);
 
       // Create camera
