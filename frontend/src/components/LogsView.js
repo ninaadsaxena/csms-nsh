@@ -14,7 +14,6 @@ const LogsView = () => {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
 
-  // Use useCallback to memoize the fetchLogs function
   const fetchLogs = useCallback(async () => {
     setLoading(true);
     try {
@@ -31,11 +30,11 @@ const LogsView = () => {
     } finally {
       setLoading(false);
     }
-  }, [filterParams]); // Add filterParams as a dependency
+  }, [filterParams]);
 
   useEffect(() => {
     fetchLogs();
-  }, [fetchLogs]); // Add fetchLogs as a dependency
+  }, [fetchLogs]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -51,7 +50,7 @@ const LogsView = () => {
   };
 
   return (
-    <div className="logs-view">
+    <div className="logs-view starry-background">
       <h2>System Logs</h2>
       
       {message && (
@@ -60,7 +59,7 @@ const LogsView = () => {
         </div>
       )}
       
-      <div className="card">
+      <div className="space-card">
         <div className="card-header">
           <h3 className="card-title">Filter Logs</h3>
         </div>
@@ -124,17 +123,19 @@ const LogsView = () => {
               </select>
             </div>
           </div>
-          <button type="submit" className="btn" disabled={loading}>
+          <button type="submit" className="cosmic-button" disabled={loading}>
             {loading ? 'Loading...' : 'Apply Filters'}
           </button>
         </form>
       </div>
       
-      <div className="card">
+      <div className="space-card">
         <div className="card-header">
           <h3 className="card-title">Log Entries</h3>
         </div>
-        {logs.length > 0 ? (
+        {loading ? (
+          <div className="space-loader"></div>
+        ) : logs.length > 0 ? (
           <table>
             <thead>
               <tr>
